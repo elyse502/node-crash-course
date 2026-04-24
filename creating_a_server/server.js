@@ -1,4 +1,5 @@
 const http = require("http");
+const fs = require("fs");
 
 const server = http.createServer((req, res) => {
   //   console.log("Request made.");
@@ -9,10 +10,17 @@ const server = http.createServer((req, res) => {
   // res.setHeader("Content-Type", "text/plain");
   res.setHeader("Content-Type", "text/html");
 
-  res.write('<head><link rel="stylesheet" href="#"/></head>');
-  res.write("<h1>Hello, Devs!</h1>");
-  res.write("<h1>Hello again, Devs!</h1>");
-  res.end();
+  // Send an html file
+  fs.readFile("./views/index.html", (err, data) => {
+    if (err) {
+      console.log(err);
+      res.end();
+    } else {
+      // res.write(data);
+      // res.end();
+      res.end(data);
+    }
+  });
 });
 
 server.listen(3000, "localhost", () => {
