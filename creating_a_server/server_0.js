@@ -1,21 +1,13 @@
 const http = require("http");
 const fs = require("fs");
-const _ = require("lodash");
 
 const server = http.createServer((req, res) => {
-  // lodash
-  const num = _.random(0, 20);
-  console.log(num);
-
-  // calling a function only once
-  const greet = _.once(() => {
-    console.log("Hello");
-  });
-
-  greet();
-  greet();
+  //   console.log("Request made.");
+  //   console.log(req);
+  console.log(req.url, req.method);
 
   // Set header content type
+  // res.setHeader("Content-Type", "text/plain");
   res.setHeader("Content-Type", "text/html");
 
   let path = "./views/";
