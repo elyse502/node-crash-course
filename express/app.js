@@ -11,11 +11,12 @@ app.set("view engine", "ejs");
 app.listen(3000);
 
 // middleware - executes for every request made to the server
-app.use((req, res) => {
+app.use((req, res, next) => {
   console.log("New request made:");
   console.log("Host: ", req.hostname);
   console.log("Path: ", req.path);
   console.log("Method: ", req.method);
+  next();
 });
 
 app.get("/", (req, res) => {
@@ -37,11 +38,17 @@ app.get("/", (req, res) => {
   res.render("index", { title: "Home", blogs });
 });
 
+// This middleware will execute only for the /about route, because it is defined after the / route
+app.use((req, res, next) => {
+  console.log("In the next middleware...");
+  next();
+});
+
 app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
 });
 
-// redirects
+// another route
 app.get("/blogs/create", (req, res) => {
   res.render("create", { title: "Create a new Blog" });
 });
