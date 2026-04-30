@@ -11,6 +11,9 @@ app.set("view engine", "ejs");
 // listen for requests
 app.listen(3000);
 
+// middleware & static files
+app.use(express.static("public"));
+
 // middleware - executes for every request made to the server
 // app.use(morgan("dev"));
 app.use(morgan("tiny"));
