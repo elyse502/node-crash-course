@@ -1,5 +1,4 @@
 const express = require("express");
-const morgan = require("morgan");
 
 // express app
 const app = express();
@@ -12,8 +11,13 @@ app.set("view engine", "ejs");
 app.listen(3000);
 
 // middleware - executes for every request made to the server
-// app.use(morgan("dev"));
-app.use(morgan("tiny"));
+app.use((req, res, next) => {
+  console.log("New request made:");
+  console.log("Host: ", req.hostname);
+  console.log("Path: ", req.path);
+  console.log("Method: ", req.method);
+  next();
+});
 
 app.get("/", (req, res) => {
   const blogs = [
@@ -32,6 +36,12 @@ app.get("/", (req, res) => {
   ];
 
   res.render("index", { title: "Home", blogs });
+});
+
+// This middleware will execute only for the /about route, because it is defined after the / route
+app.use((req, res, next) => {
+  console.log("In the next middleware...");
+  next();
 });
 
 app.get("/about", (req, res) => {
