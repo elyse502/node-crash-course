@@ -4,9 +4,6 @@ const morgan = require("morgan");
 // express app
 const app = express();
 
-// connect to mongodb
-const dbURI = process.env.MONGODB_URI;
-
 // register view engine
 app.set("view engine", "ejs");
 // app.set("views", "myviews"); // default is views folder, if we want to change it we can use this line of code
