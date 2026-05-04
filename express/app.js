@@ -1,18 +1,26 @@
 const express = require("express");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
 // express app
 const app = express();
 
 // connect to mongodb
-const dbURI = process.env.MONGODB_URI;
+const dbURI = `${process.env.MONGODB_URI}/node-tuts`;
+mongoose
+  .connect(dbURI)
+  .then(() => {
+    console.log("DB connected");
+    app.listen(3000);
+  })
+  .catch((err) => console.log(err));
 
 // register view engine
 app.set("view engine", "ejs");
-// app.set("views", "myviews"); // default is views folder, if we want to change it we can use this line of code
 
 // listen for requests
-app.listen(3000);
+// app.listen(3000);
 
 // middleware & static files
 app.use(express.static("public"));
