@@ -1,0 +1,3 @@
+Hello! This is a sample input file.
+The server will read this content when you make a GET request.
+Feel free to modify this file to test different content.
