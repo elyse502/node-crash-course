@@ -266,3 +266,272 @@ pathname.split("/")[2];
 - `404 Not Found`
 
 This is essentially a miniature version of what Express does internally. Once you understand this implementation, Express routing and middleware become much easier to grasp.
+
+<br/><hr/><br/>
+
+<details>
+    <summary><b>Express version implementation</b></summary>
+
+    Using Express makes the code cleaner because routing, JSON parsing, and route parameters are handled for you.
+
+## Solution
+
+```js
+const express = require("express");
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+const tasks = [];
+let nextId = 1;
+
+// POST /todo
+app.post("/todo", (req, res) => {
+  const { task, status } = req.body;
+
+  if (!task || !["todo", "doing", "done"].includes(status)) {
+    return res.status(400).json({
+      message: "Invalid task or status",
+    });
+  }
+
+  const newTask = {
+    id: nextId++,
+    task,
+    status,
+  };
+
+  tasks.push(newTask);
+
+  res.status(201).json(newTask);
+});
+
+// GET /todo
+app.get("/todo", (req, res) => {
+  const { status } = req.query;
+
+  if (status) {
+    const filteredTasks = tasks.filter((task) => task.status === status);
+
+    return res.json(filteredTasks);
+  }
+
+  res.json(tasks);
+});
+
+// GET /todo/:id
+app.get("/todo/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const task = tasks.find((task) => task.id === id);
+
+  if (!task) {
+    return res.status(404).json({
+      message: "Task not found",
+    });
+  }
+
+  res.json(task);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+```
+
+---
+
+## Task Shape
+
+```ts
+type Task = {
+  id: number;
+  task: string;
+  status: "todo" | "doing" | "done";
+};
+```
+
+---
+
+## Create a Task
+
+### Request
+
+```http
+POST /todo
+Content-Type: application/json
+
+{
+  "task": "Learn Express",
+  "status": "todo"
+}
+```
+
+### curl
+
+```bash
+curl -X POST http://localhost:3000/todo \
+-H "Content-Type: application/json" \
+-d '{"task":"Learn Express","status":"todo"}'
+```
+
+### Response
+
+```json
+{
+  "id": 1,
+  "task": "Learn Express",
+  "status": "todo"
+}
+```
+
+---
+
+## Get All Tasks
+
+### Request
+
+```http
+GET /todo
+```
+
+### curl
+
+```bash
+curl http://localhost:3000/todo
+```
+
+### Response
+
+```json
+[
+  {
+    "id": 1,
+    "task": "Learn Express",
+    "status": "todo"
+  }
+]
+```
+
+---
+
+## Filter Tasks by Status
+
+### Request
+
+```http
+GET /todo?status=todo
+```
+
+### curl
+
+```bash
+curl "http://localhost:3000/todo?status=todo"
+```
+
+### Response
+
+```json
+[
+  {
+    "id": 1,
+    "task": "Learn Express",
+    "status": "todo"
+  }
+]
+```
+
+---
+
+## Get a Task by ID
+
+### Request
+
+```http
+GET /todo/1
+```
+
+### curl
+
+```bash
+curl http://localhost:3000/todo/1
+```
+
+### Response
+
+```json
+{
+  "id": 1,
+  "task": "Learn Express",
+  "status": "todo"
+}
+```
+
+---
+
+## Folder Structure
+
+```
+.
+├── server.js
+├── package.json
+└── node_modules
+```
+
+---
+
+## Install Dependencies
+
+```bash
+npm init -y
+npm install express
+```
+
+---
+
+## Run the Server
+
+```bash
+node server.js
+```
+
+Output:
+
+```
+Server running on http://localhost:3000
+```
+
+---
+
+## Concepts Demonstrated
+
+- Creating an Express application.
+- Middleware with `express.json()`.
+- Handling POST requests.
+- Handling GET requests.
+- Sending JSON responses.
+- Reading query parameters:
+
+```js
+req.query.status;
+```
+
+- Reading route parameters:
+
+```js
+req.params.id;
+```
+
+- Returning status codes:
+
+```js
+res.status(201).json(...)
+res.status(400).json(...)
+res.status(404).json(...)
+```
+
+This is the same functionality as the pure Node.js version, but Express handles much of the low-level work such as routing, parsing JSON bodies, and building responses.
+
+</details>
