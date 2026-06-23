@@ -1,39 +1,41 @@
 const express = require("express");
-const { performance } = require("node:perf_hooks");
 
 const app = express();
 const PORT = 3000;
 
 // Middleware
 function requestLogger(req, res, next) {
-  const start = performance.now();
+  const start = process.hrtime.bigint();
 
-  // Called when the response has been completely sent
   res.on("finish", () => {
-    const end = performance.now();
-    const responseTime = (end - start).toFixed(2);
+    const end = process.hrtime.bigint();
+
+    // Convert nanoseconds to milliseconds
+    const responseTime = Number(end - start) / 1e6;
+
+    const timestamp = new Date().toISOString();
 
     console.log(
-      `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} - ${responseTime}ms`,
+      `[${timestamp}] ${req.method} ${req.originalUrl} - ${responseTime.toFixed(2)}ms`,
     );
   });
 
   next();
 }
 
-// Apply middleware globally
+// Apply middleware to all routes
 app.use(requestLogger);
 
-// Route: GET /
+// Route: /
 app.get("/", (req, res) => {
-  res.status(200).json({
+  res.json({
     message: "Welcome to the home page",
   });
 });
 
-// Route: GET /users
+// Route: /users
 app.get("/users", (req, res) => {
-  res.status(200).json({
+  res.json({
     users: [
       {
         id: 1,
@@ -48,5 +50,5 @@ app.get("/users", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server listening on http://localhost:${PORT}`);
 });
